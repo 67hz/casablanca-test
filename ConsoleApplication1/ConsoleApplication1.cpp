@@ -9,22 +9,24 @@ using namespace concurrency::streams;	// async streams
 
 int main()
 {
+
 	// make shared pointer for filestream - template type of <ostream>
 	auto fileStream = std::make_shared<ostream>();
 
 	// open stream to output file // lambda[=] capture by value 
-	pplx::task<void> requestTask = fstream::open_ostream(U("results.html")).then([&](ostream outFile)
+	pplx::task<void> requestTask = fstream::open_ostream(U("results.json")).then([&](ostream outFile)
 	{
 		// file to write to
 		*fileStream = outFile;
 
 		// create http_client to send request
-		http_client client(U("http://www.github.com/"));
+		http_client client(U("http://www.mapquestapi.com/"));
 
 		// build request URI and start request
-		uri_builder builder(U("/ajhino"));
+		uri_builder builder(U("traffic/v2/incidents"));
 
-		builder.append_query(U("tab"), U("repositories"));
+		builder.append_query(U("key"), U("EMmnAiwykQhrjAkG2pGhFM2vrxYznUXP"));
+		builder.append_query(U("boundingBox"), U("27.80,-97.39,27.58,-97.21")); // selena statue to bob hall pier coords
 		return client.request(methods::GET, builder.to_string());
 	})
 	// Handle response headers arriving
